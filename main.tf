@@ -41,6 +41,7 @@ resource "aws_s3_object" "index" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "index.html"
   source = "index.html"  # Asegúrate de tener este archivo en el mismo directorio
+  content_type = "text/html"
 }
 
 # Output para la URL del sitio web estático en S3
