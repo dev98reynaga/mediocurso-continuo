@@ -11,15 +11,18 @@ resource "aws_instance" "mi_servidor" {
   }
 }
 
-# Configuración del bucket S3 para sitio web estático
+# Configuración del bucket S3
 resource "aws_s3_bucket" "static_site" {
   bucket = "my-unique-static-site-bucket-12345"  # Cambia a un nombre único
+}
 
-  website {
-    index_document = "index.html"
+# Configuración para habilitar el sitio web estático en el bucket
+resource "aws_s3_bucket_website_configuration" "website" {
+  bucket = aws_s3_bucket.static_site.id
+
+  index_document {
+    suffix = "index.html"
   }
-
-  acl = "public-read"
 }
 
 # Cargar el archivo index.html en el bucket S3
