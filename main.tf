@@ -2,13 +2,6 @@ provider "aws" {
   region = "us-east-1"  # Cambia a tu región preferida
 }
 
-# Generador de string aleatorio para el nombre del bucket (solo minúsculas y sin caracteres especiales)
-resource "random_string" "bucket_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-}
-
 # Configuración de la instancia EC2
 resource "aws_instance" "mi_servidor" {
   ami           = "ami-0866a3c8686eaeeba" 
@@ -18,10 +11,9 @@ resource "aws_instance" "mi_servidor" {
   }
 }
 
-# Configuración del bucket S3
+# Configuración del bucket S3 con un nombre fijo
 resource "aws_s3_bucket" "static_site" {
-  bucket = "my-static-site-bucket-${random_string.bucket_suffix.result}"
-
+  bucket = "lreynagapage1"  
   website {
     index_document = "index.html"
   }
@@ -38,9 +30,9 @@ resource "aws_s3_bucket_website_configuration" "website" {
 
 # Cargar el archivo index.html en el bucket S3
 resource "aws_s3_object" "index" {
-  bucket = aws_s3_bucket.static_site.bucket
-  key    = "index.html"
-  source = "index.html"  # Asegúrate de tener este archivo en el mismo directorio
+  bucket       = aws_s3_bucket.static_site.bucket
+  key          = "index.html"
+  source       = "index.html"  
   content_type = "text/html"
 }
 
