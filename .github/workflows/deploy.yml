@@ -27,6 +27,9 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
+      - name: Import existing S3 bucket
+        run: terraform import aws_s3_bucket.static_site lreynagapage1 || echo "Bucket already imported"
+
       - name: Select Salon Based on Day
         id: salon_select
         run: |
