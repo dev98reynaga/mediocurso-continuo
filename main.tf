@@ -1,5 +1,11 @@
 provider "aws" {
-  region = "us-east-1"  
+  region = "us-east-1"  # Cambia a tu región preferida
+}
+
+# Generador de string aleatorio para el nombre del bucket
+resource "random_string" "bucket_suffix" {
+  length  = 8
+  special = false
 }
 
 # Configuración de la instancia EC2
@@ -13,7 +19,11 @@ resource "aws_instance" "mi_servidor" {
 
 # Configuración del bucket S3
 resource "aws_s3_bucket" "static_site" {
-  bucket = "my-unique-static-site-bucket-12345" 
+  bucket = "my-static-site-bucket-${random_string.bucket_suffix.result}"
+
+  website {
+    index_document = "index.html"
+  }
 }
 
 # Configuración para habilitar el sitio web estático en el bucket
@@ -29,7 +39,7 @@ resource "aws_s3_bucket_website_configuration" "website" {
 resource "aws_s3_object" "index" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "index.html"
-  source = "index.html"  
+  source = "index.html"  # Asegúrate de tener este archivo en el mismo directorio
 }
 
 # Output para la URL del sitio web estático en S3
