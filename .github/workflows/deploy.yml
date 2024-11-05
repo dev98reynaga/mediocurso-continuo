@@ -1,0 +1,45 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.4.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: us-east-1 # Cambia a tu región preferida
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Select Salon Based on Day
+        id: salon_select
+        run: |
+          DAY_OF_WEEK=$(date +%u)
+          if [ "$DAY_OF_WEEK" -eq 1 ] || [ "$DAY_OF_WEEK" -eq 2 ] || [ "$DAY_OF_WEEK" -eq 3 ]; then
+            echo "salon=Salon1" >> $GITHUB_ENV
+          else
+            echo "salon=Salon2" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: Plan Terraform changes
+        run: terraform plan -var="salon=${{ env.salon }}" -out=plan.tfplan
+
+      - name: Apply Terraform changes
+        run: terraform apply "plan.tfplan"
