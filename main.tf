@@ -2,10 +2,11 @@ provider "aws" {
   region = "us-east-1"  # Cambia a tu región preferida
 }
 
-# Generador de string aleatorio para el nombre del bucket
+# Generador de string aleatorio para el nombre del bucket (solo minúsculas y sin caracteres especiales)
 resource "random_string" "bucket_suffix" {
   length  = 8
   special = false
+  upper   = false
 }
 
 # Configuración de la instancia EC2
